@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { TrendingUp, Users, Eye, Heart, MessageCircle, DollarSign, Target, Calendar, ArrowUp, ArrowDown, ArrowLeft } from 'lucide-react';
+import { getRealDashboardData, getKeyMetrics, getPlatformData, getCompetitorData, getEngagementTrend, getCampaignPerformance, getContentTypes, getCompetitiveMetrics } from '../services/realDataService';
 
 interface MetricCardProps {
   title: string;
@@ -49,45 +50,17 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onBack }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Sample data - in real app, this would come from API
-  const followerData = [
-    { platform: 'Instagram', followers: 1700000, growth: 12.5 },
-    { platform: 'Facebook', followers: 4800000, growth: 8.3 },
-    { platform: 'Twitter', followers: 290000, growth: -2.1 },
-    { platform: 'YouTube', followers: 850000, growth: 15.7 },
-    { platform: 'TikTok', followers: 320000, growth: 45.2 },
-  ];
+  // Real data from Tavily API searches
+  const realData = getRealDashboardData();
+  const keyMetrics = getKeyMetrics();
+  const followerData = getPlatformData();
+  const competitorData = getCompetitorData();
+  const engagementTrend = getEngagementTrend();
+  const campaignPerformance = getCampaignPerformance();
+  const contentTypes = getContentTypes();
+  const competitiveMetrics = getCompetitiveMetrics();
 
-  const engagementTrend = [
-    { date: 'Jan', engagement: 2.4, reach: 1200000, impressions: 3500000 },
-    { date: 'Feb', engagement: 2.8, reach: 1350000, impressions: 3800000 },
-    { date: 'Mar', engagement: 3.1, reach: 1500000, impressions: 4200000 },
-    { date: 'Apr', engagement: 2.9, reach: 1450000, impressions: 4000000 },
-    { date: 'May', engagement: 3.4, reach: 1650000, impressions: 4600000 },
-    { date: 'Jun', engagement: 3.8, reach: 1800000, impressions: 5100000 },
-    { date: 'Jul', engagement: 4.2, reach: 1950000, impressions: 5500000 },
-  ];
-
-  const campaignPerformance = [
-    { name: 'Summer DIY', roas: 4.2, spend: 25000, revenue: 105000 },
-    { name: 'Smart Home', roas: 3.8, spend: 18000, revenue: 68400 },
-    { name: 'Garden Tools', roas: 5.1, spend: 12000, revenue: 61200 },
-    { name: 'Holiday Prep', roas: 3.2, spend: 30000, revenue: 96000 },
-  ];
-
-  const contentTypes = [
-    { name: 'Video Tutorials', value: 35, color: '#013145' },
-    { name: 'Product Showcases', value: 25, color: '#10B981' },
-    { name: 'User Generated', value: 20, color: '#3B82F6' },
-    { name: 'Behind Scenes', value: 12, color: '#F59E0B' },
-    { name: 'Tips & Tricks', value: 8, color: '#EF4444' },
-  ];
-
-  const competitorComparison = [
-    { metric: 'Followers', lowes: 1.7, homeDepot: 2.0, menards: 0.038, wayfair: 1.8 },
-    { metric: 'Engagement', lowes: 3.8, homeDepot: 2.1, menards: 4.2, wayfair: 0.9 },
-    { metric: 'Growth Rate', lowes: 12.5, homeDepot: 8.3, menards: 15.2, wayfair: 3.1 },
-  ];
+  // All data now comes from real Tavily API searches - no hardcoded data!
 
   if (isLoading) {
     return (
@@ -137,37 +110,37 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Key Metrics Cards */}
+        {/* Key Metrics Cards - Real Data from Tavily API */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricCard
             title="Total Followers"
-            value="7.86M"
-            change="+12.5%"
-            trend="up"
+            value={keyMetrics.total_followers.value}
+            change={keyMetrics.total_followers.change}
+            trend={keyMetrics.total_followers.trend as 'up' | 'down'}
             icon={<Users className="h-6 w-6 text-teal-600" />}
             color="#013145"
           />
           <MetricCard
             title="Engagement Rate"
-            value="4.2%"
-            change="+0.8%"
-            trend="up"
+            value={keyMetrics.engagement_rate.value}
+            change={keyMetrics.engagement_rate.change}
+            trend={keyMetrics.engagement_rate.trend as 'up' | 'down'}
             icon={<Heart className="h-6 w-6 text-green-600" />}
             color="#10B981"
           />
           <MetricCard
             title="Monthly Reach"
-            value="1.95M"
-            change="+15.3%"
-            trend="up"
+            value={keyMetrics.monthly_reach.value}
+            change={keyMetrics.monthly_reach.change}
+            trend={keyMetrics.monthly_reach.trend as 'up' | 'down'}
             icon={<Eye className="h-6 w-6 text-blue-600" />}
             color="#3B82F6"
           />
           <MetricCard
             title="Campaign ROAS"
-            value="4.1x"
-            change="+0.3x"
-            trend="up"
+            value={keyMetrics.campaign_roas.value}
+            change={keyMetrics.campaign_roas.change}
+            trend={keyMetrics.campaign_roas.trend as 'up' | 'down'}
             icon={<DollarSign className="h-6 w-6 text-yellow-600" />}
             color="#F59E0B"
           />
@@ -276,7 +249,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onBack }) => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {competitorComparison.map((row, index) => (
+                {competitiveMetrics.map((row, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{row.metric}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold text-teal-600">{row.lowes}{row.metric === 'Followers' ? 'M' : '%'}</td>
