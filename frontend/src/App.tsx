@@ -9,8 +9,10 @@ import {
   AlertCircle,
   Brain,
   Lightbulb,
-  Zap
+  Zap,
+  PieChart
 } from 'lucide-react'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
@@ -152,7 +154,19 @@ function App() {
         <p className="text-xl text-gray-600 mb-8">AI-powered competitor analysis and content strategy using real-time web search</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div
+          className="card text-center cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          onClick={() => setCurrentPage('analytics')}
+        >
+          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <PieChart className="w-8 h-8 text-teal-600" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Analytics Dashboard</h3>
+          <p className="text-gray-600 text-xs mb-4">Comprehensive metrics and visual analytics</p>
+          <div className="text-teal-600 font-medium text-sm">View Dashboard →</div>
+        </div>
+
         <div
           className="card text-center cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
           onClick={() => setCurrentPage('competitors')}
@@ -905,8 +919,9 @@ Trending: #HomeTransformation #WeekendProject #DIYBeginner
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className={currentPage === 'analytics' ? '' : 'max-w-7xl mx-auto px-6 py-8'}>
         {currentPage === 'dashboard' && <Dashboard />}
+        {currentPage === 'analytics' && <AnalyticsDashboard onBack={() => setCurrentPage('dashboard')} />}
         {currentPage === 'competitors' && <CompetitorAnalysis />}
         {currentPage === 'lowes' && <LowesPerformance />}
         {currentPage === 'campaigns' && <CampaignAnalysis />}

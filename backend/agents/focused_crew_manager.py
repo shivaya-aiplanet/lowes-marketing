@@ -7,6 +7,11 @@ import logging
 import requests
 import re
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class FocusedCrewManager:
     """Manager for 3 focused AI agents using REAL web search only."""
@@ -14,7 +19,8 @@ class FocusedCrewManager:
     def __init__(self):
         self.active_tasks = {}
         self.completed_tasks = {}
-        self.tavily_api_key = "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"
+        # Use environment variable or fallback to hardcoded key
+        self.tavily_api_key = os.getenv("TAVILY_API_KEY", "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")
         # Using OpenAI-compatible API for LLM analysis
         self.llm_api_url = "https://api.openai.com/v1/chat/completions"
         self.llm_api_key = "sk-placeholder"  # Will use environment variable in production
